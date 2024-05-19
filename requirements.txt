@@ -1,0 +1,12 @@
+streamlit
+google-generativeai
+python-dotenv
+langchain
+faiss-cpu
+langchain_google_genai
+pypdf
+langchain-openai
+openai
+tiktoken
+
+-e .
