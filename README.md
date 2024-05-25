@@ -11,10 +11,15 @@ git clone https://github.com/Sumegh20/Chat-with-Multiple-PDFS-using-GenAI.git
 ```
 bash init_setup.sh
 ```
-### STEP 03- Create a .env file in the root directory and add your OPENAI_API_KEY credentials as follows:
+### STEP 03- Create a .env file in the root directory and add your GOOGLE_API_KEY & GROQ_API_KEY credentials as follows:
 ```
-OPENAI_API_KEY = "xxxxxxxxxxxxxxxxxxxxxxxxxxxxx"
+GOOGLE_API_KEY = "***************************"
+GROQ_API_KEY = "***************************"
 ```
+
+[Create google API Key](https://ai.google.dev/gemini-api/docs/api-key)
+
+[Create groq API Key](https://console.groq.com/docs/quickstart#create-an-api-key)
 
 ### STEP 04- Activate the virtual environment
 ```
@@ -37,6 +42,6 @@ http://localhost:8501/
 - Python
 - LangChain
 - Streamlit
-- OpenAI
-- GPT 3
+- groq
+- Gemma-7b-It
 - FAISS
