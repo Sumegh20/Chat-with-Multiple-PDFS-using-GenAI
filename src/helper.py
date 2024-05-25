@@ -8,6 +8,7 @@ from langchain.schema.runnable import RunnablePassthrough
 from langchain.schema.output_parser import StrOutputParser
 # from langchain.embeddings.openai import OpenAIEmbeddings
 # from langchain_community.chat_models import ChatOpenAI
+from langchain_groq import ChatGroq
 from langchain_openai import ChatOpenAI
 from langchain_openai import OpenAIEmbeddings
 from dotenv import load_dotenv
@@ -15,8 +16,9 @@ import os
 from params import *
 
 load_dotenv()
-os.environ["OPENAI_API_KEY"] = os.environ.get('OPENAI_API_KEY')
+# os.environ["OPENAI_API_KEY"] = os.environ.get('OPENAI_API_KEY')
 os.environ["GOOGLE_API_KEY"] = os.environ.get('GOOGLE_API_KEY')
+os.environ['GROQ_API_KEY'] = os.environ.get('GROQ_API_KEY')
 
 # Read multiple pdf files
 def get_documnts_from_pdf(folder_path):
@@ -41,11 +43,9 @@ def text_splitter(document, chunk_size=500, chunk_overlap=50):
     return chunks
 
 #loading embeddings model
-def load_embedding(is_openai = True):
-    if is_openai:
-        embeddings = OpenAIEmbeddings()
-    else:
-        embeddings = GoogleGenerativeAIEmbeddings(model="models/text-embedding-004")
+def load_embedding():
+    # embeddings = OpenAIEmbeddings()
+    embeddings = GoogleGenerativeAIEmbeddings(model="models/text-embedding-004")
 
     return embeddings
 
@@ -60,15 +60,18 @@ def create_knowledgebase(texts, db_path="faiss_index"):
 
 # creating the prompt
 def create_prompt():
-    template="""You are an assistant for question-answering tasks.
+    template="""You are an assistant for question-answering tasks while prioritizing a seamless user experience.
                 Use the following pieces of retrieved context to answer the question.
                 If you don't know the answer, just say that you don't know.
-                Use five sentences maximum and keep the answer concise.
+                Use ten sentences maximum and keep the answer concise.
+                You should be able to remember and reference the last three conversations between you and the user.
+                Maintain a friendly, positive, and professional tone throughout interactions.
                 Question: {question}
                 Context: {context}
                 Chat history: {chat_history}
                 Answer:    
             """
+    
     prompt=ChatPromptTemplate.from_template(template)
     
     return prompt
@@ -95,11 +98,17 @@ def create_rag_chain(llm, retriever, prompt):
     
     return rag_chain
 
-def get_llm(is_openai = True):
-    if is_openai:
-        llm = ChatOpenAI(model_name="gpt-3.5-turbo", temperature=0, streaming=True)
-    else:
-        llm = ChatGoogleGenerativeAI(model="gemini-1.0-pro-latest")
+def get_llm():
+    
+    # OpenAI
+    # llm = ChatOpenAI(model_name="gpt-3.5-turbo", temperature=0, streaming=True)
+
+    # Gemini
+    # llm = ChatGoogleGenerativeAI(model="gemini-1.0-pro-latest")
+
+    # Groq
+    llm = ChatGroq(model='Gemma-7b-It')
+
     return llm
 
 def get_output(question, chat_history):
@@ -125,10 +134,3 @@ def get_output_stream(question, chat_history):
     
     result = rag_chain.stream({"question": question, "chat_history":chat_history})
     return result
-
-'''
-pip install -U langchain-openai
-from langchain_openai import OpenAIEmbeddings
-from langchain_community.chat_models import ChatOpenAI
-
-'''
